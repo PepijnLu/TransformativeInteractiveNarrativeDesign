@@ -1020,6 +1020,7 @@ MonoBehaviour:
   rewindFlickerSpeed: 0.5
   rewindObject: {fileID: 420160703}
   player: {fileID: 1831324816}
+  savedStartPos: 0
 --- !u!4 &1072099098
 Transform:
   m_ObjectHideFlags: 0
@@ -1324,8 +1325,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6728f3e9747b8ae469c5effc672bda6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFrames: 210
-  frameRate: 30
+  maxFrames: 420
+  frameRate: 60
+  frameNumber: 0
   rewindPlayback: {fileID: 1072099097}
 --- !u!1 &1642545176
 GameObject:
@@ -1908,7 +1910,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 807467619ee55e949be4aded77828233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  screenRecorder: {fileID: 1588744249}
   playerCanMove: 0
+  savedFrames: 0
 --- !u!4 &2132576567
 Transform:
   m_ObjectHideFlags: 0

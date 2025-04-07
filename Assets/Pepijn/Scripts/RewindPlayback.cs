@@ -10,10 +10,11 @@ public class RewindPlayback : MonoBehaviour
     public AudioSource rewindSound;
     [SerializeField] float rewindFlickerSpeed;
     [SerializeField] GameObject rewindObject, player;
-    bool rewinding;
     Vector3 startPosition;
     Quaternion startRotation;
     public bool savedStartPos;
+    int imagesLoaded;
+
 
     void Start()
     {
@@ -22,10 +23,7 @@ public class RewindPlayback : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Backspace))
-        {
-            StartCoroutine(LoadImages());
-        }
+
     }
 
     public void GetStartPosition()
@@ -40,27 +38,16 @@ public class RewindPlayback : MonoBehaviour
         GameManager.instance.playerCanMove = false;
         rewindSound.Play();
         yield return new WaitForSeconds(1.26f);
-        rewinding = true;
-        StartCoroutine(RewindFlicker());
         imageToChange.gameObject.SetActive(true);
-        string path = Path.Combine(Application.streamingAssetsPath, folderName);
-        
-        if (Directory.Exists(path))
-        {
-            string[] files = Directory.GetFiles(path, "*.png");
-            int currentIndex = files.Length;
-            float timeStep = 6.15f / files.Length;
 
-            while(currentIndex > 0)
-            {
-                LoadImage(files[currentIndex - 1]);
-                currentIndex--;
-                yield return new WaitForSeconds(timeStep);
-            }
-        }
-        else
+        int totalFrames = GameManager.instance.screenRecorder.framesToSave.Count;
+        float timeStep = 6.15f / totalFrames;
+
+        while(imagesLoaded < totalFrames)
         {
-            Debug.LogError("Folder does not exist: " + path);
+            imageToChange.texture = GameManager.instance.screenRecorder.framesToSave.Pop();
+            imagesLoaded++;
+            yield return new WaitForSeconds(timeStep);
         }
 
         player.transform.position = startPosition;
@@ -68,26 +55,15 @@ public class RewindPlayback : MonoBehaviour
         savedStartPos = false;
 
         imageToChange.gameObject.SetActive(false);
-        rewinding = false;
         GameManager.instance.playerCanMove = true;
     }
 
     IEnumerator RewindFlicker()
     {
-        //rewindObject.SetActive(true);
         while(true)
         {
             yield return new WaitForSeconds(rewindFlickerSpeed);
             rewindObject.SetActive(!rewindObject.activeSelf);
         }
-        //rewindObject.SetActive(false);
-    }
-
-    void LoadImage(string filePath)
-    {
-        byte[] fileData = File.ReadAllBytes(filePath);
-        Texture2D texture = new Texture2D(1920, 1080); // create a texture
-        texture.LoadImage(fileData); // load the PNG data into the texture
-        imageToChange.texture = texture;
     }
 }

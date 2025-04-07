@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] public ScreenRecorder screenRecorder;
     public static GameManager instance;
     public bool playerCanMove;
+    public int savedFrames;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -17,6 +19,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Backspace))
+        {
+            if(screenRecorder.recording) screenRecorder.stopRecording = true;
+        }
     }
 }
