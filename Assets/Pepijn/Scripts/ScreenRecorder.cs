@@ -63,7 +63,7 @@ public class ScreenRecorder : MonoBehaviour
     private int screenHeight;
     private Camera thisCamera;
     private CommandBuffer commandBuffer;
-    [SerializeField] RewindPlayback rewindPlayback;
+    [SerializeField] public RewindPlayback rewindPlayback;
     public bool stopRecording, recording;
 
     void Start()
@@ -100,7 +100,7 @@ public class ScreenRecorder : MonoBehaviour
         thisCamera.RemoveCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
     }
 
-    IEnumerator SaveFrames()
+    public IEnumerator SaveFrames()
     {
         recording = true;
         while(true)

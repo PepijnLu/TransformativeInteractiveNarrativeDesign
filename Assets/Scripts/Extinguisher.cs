@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class Extinguisher : MonoBehaviour
 {
-    public bool isEquipped = false;
-
     private float extinguishDistance = 5f;
     private float lookThreshold = 0.4f;
     private float extinguishTimer = 0f;
     private float timeToExtinguish = 2f;
-    private GameObject currentFireTarget = null;
-    public Transform playerCamera = null;
+    [SerializeField] private GameObject currentFireTarget = null;
+    public Transform playerCamera, playerTransform;
 
-    public AudioSource extinguishSound;
+    public AudioSource extinguishSound, objectiveSound;
 
     private void Update()
     {
 
-        if (isEquipped)
+        if (GameManager.instance.fireExtinguisherEquipped)
         {
             CheckForFireObjects();
 
@@ -35,6 +33,9 @@ public class Extinguisher : MonoBehaviour
                     if (extinguishTimer >= timeToExtinguish)
                     {
                         currentFireTarget.SetActive(false);
+                        GameManager.instance.interactedThisLoop = true;
+                        GameObject fire = GameObject.FindGameObjectWithTag("Fire");
+                        if(fire == null) objectiveSound.Play();
                         extinguishTimer = 0f;
                     }
                 }   
@@ -74,7 +75,20 @@ public class Extinguisher : MonoBehaviour
         currentFireTarget = bestFireTarget;
     }
 
-    public void Equipper() {
-        isEquipped = true;
+    public void SetCorrectParent()
+    {
+        if(!GameManager.instance.fireExtinguisherEquipped)
+        {
+            Debug.Log("FireExt equip");
+            transform.SetParent(playerTransform);
+            transform.position = playerTransform.position + (playerTransform.transform.forward * 1) + (playerTransform.transform.right * 1f) + (-playerTransform.transform.up * .5f);
+            GameManager.instance.fireExtinguisherEquipped = true;
+        }
+        else
+        {
+            Debug.Log("FireExt deequip");
+            transform.SetParent(null);
+            GameManager.instance.fireExtinguisherEquipped = false;
+        }
     }
 }

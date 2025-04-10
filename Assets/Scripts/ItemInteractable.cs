@@ -8,5 +8,6 @@ public class ItemInteractable : MonoBehaviour, IInteractable
     public void OnInteract()
     {
         OnInteractEvent.Invoke();
+        GameManager.instance.interactedThisLoop = true;
     }
 }

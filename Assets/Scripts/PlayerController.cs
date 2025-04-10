@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour
     private float mouseSmoothTime = 0.03f;
     private bool lockCursor = true;
 
-    private float interactionDistance = 3f;
+    [SerializeField] float interactionDistance = 3f;
+    [SerializeField] AudioSource footstepSfx;
     private float lookThreshold = 0.3f;
     private IInteractable currentInteractable = null;
 
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
     Vector2 currentMouseDelta = Vector2.zero;
     Vector2 currentMouseDeltaVelocity = Vector2.zero;
     float moveX, moveZ, pitch;
+    [SerializeField] float footstepTiming;
 
     void Start()
     {
@@ -35,10 +37,13 @@ public class PlayerController : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+        StartCoroutine(PlayFootstepSound());
     }
 
     void Update()
     {
+        if(!GameManager.instance.playerCanMove) return;
+
         UpdateMouseLook();
         //UpdateMovement();
         
@@ -59,6 +64,19 @@ public class PlayerController : MonoBehaviour
 
         moveX = Input.GetAxisRaw("Horizontal");
         moveZ = Input.GetAxisRaw("Vertical");
+    }
+
+    IEnumerator PlayFootstepSound()
+    {
+        while(true)
+        {
+            while((rb.linearVelocity.x != 0 || rb.linearVelocity.z != 0) && GameManager.instance.playerCanMove)
+            {
+                footstepSfx.Play();
+                yield return new WaitForSeconds(footstepTiming);
+            }
+            yield return null;
+        }
     }
 
     void FixedUpdate()
@@ -136,8 +154,11 @@ public class PlayerController : MonoBehaviour
 
                 if (lookAlignment > bestMatch)
                 {
-                    bestMatch = lookAlignment;
-                    bestInteractable = interactable;
+                    if(!(interactable == currentInteractable && GameManager.instance.fireExtinguisherEquipped))
+                    {
+                        bestMatch = lookAlignment;
+                        bestInteractable = interactable;
+                    }
                 }
             }
         }
@@ -147,5 +168,6 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"Set currentInteractable to {bestInteractable.GetType().Name}");
             currentInteractable = bestInteractable;
         }
+        if(bestInteractable == null && currentInteractable != null) currentInteractable = null; 
     }
 }
