@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
             pitch -= mouseY;
             pitch = Mathf.Clamp(pitch, -90f, 90f);
 
-            cameraTransform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            //cameraTransform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         }
     }
 
